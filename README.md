@@ -1,18 +1,32 @@
 <div align="center">
-<img src="assets/hero.svg" width="100%"/>
+
+<img src="assets/agent-notifier-hero.png" alt="agent-notifier — Vedic Arsenal" width="100%" />
+
+# 🌊 agent-notifier
+
+### *शंख* — Shankha — the conch shell that notifies all
+
+**Notification dispatch for agent events — webhook, digest, routing, in-process callbacks. Zero dependencies.**
+
+[![Python](https://img.shields.io/badge/Python-3.8%2B-blue?style=flat-square&logo=python)](https://python.org)
+[![Zero Dependencies](https://img.shields.io/badge/Dependencies-Zero-brightgreen?style=flat-square)](https://github.com/darshjme/agent-notifier)
+[![Tests](https://img.shields.io/badge/Tests-Passing-success?style=flat-square)](https://github.com/darshjme/agent-notifier/actions)
+[![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](LICENSE)
+[![Vedic Arsenal](https://img.shields.io/badge/Vedic%20Arsenal-100%20libs-purple?style=flat-square)](https://github.com/darshjme/arsenal)
+
+*Part of the [**Vedic Arsenal**](https://github.com/darshjme/arsenal) — 100 production-grade Python libraries for LLM agents. Zero dependencies. Battle-tested.*
+
 </div>
-
-# agent-notifier
-
-**Notification dispatch for agent events: webhooks, digests, routers.**
-
-[![PyPI version](https://img.shields.io/pypi/v/agent-notifier?color=purple&style=flat-square)](https://pypi.org/project/agent-notifier/) [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue?style=flat-square)](https://python.org) [![License: MIT](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE) [![Tests](https://img.shields.io/badge/tests-passing-brightgreen?style=flat-square)](#)
 
 ---
 
-## The Problem
+## Overview
 
-Without a notifier, important agent events — failures, completions, anomalies — are lost unless someone is watching the logs. Silent failures cost time; good alerts save it.
+`agent-notifier` implements **notification dispatch for agent events — webhook, digest, routing, in-process callbacks. zero dependencies.**
+
+Inspired by the Vedic principle of *शंख* (Shankha), this library brings the ancient wisdom of structured discipline to modern LLM agent engineering.
+
+No external dependencies. Pure Python 3.8+. Drop it in anywhere.
 
 ## Installation
 
@@ -20,108 +34,67 @@ Without a notifier, important agent events — failures, completions, anomalies 
 pip install agent-notifier
 ```
 
+Or clone directly:
+```bash
+git clone https://github.com/darshjme/agent-notifier.git
+cd agent-notifier
+pip install -e .
+```
+
 ## Quick Start
 
 ```python
-from agent_notifier import DigestNotifier, Notifier, NotifierProtocol
+from notifier import *
 
-# Initialise
-instance = DigestNotifier(name="my_agent")
-
-# Use
-result = instance.run()
-print(result)
+# Initialize
+# See examples/ for full usage patterns
 ```
 
-## API Reference
+## Why `agent-notifier`?
 
-### `DigestNotifier`
+Production LLM systems fail in predictable ways. `agent-notifier` solves the **notifier** failure mode with:
 
-```python
-class DigestNotifier:
-    """Batches notifications; delivers them when :meth:`flush` is called.
-    def __init__(self, flush_size: int = 10) -> None:
-    def pending_count(self) -> int:
-        """Number of buffered but un-flushed notifications."""
-    def notify(self, event: str, data: dict[str, Any] | None = None) -> None:
-        """Buffer *event* + *data*.
-    def flush(self) -> list[dict[str, Any]]:
-        """Return all buffered notifications and clear the buffer."""
+- **Zero dependencies** — no version conflicts, no bloat
+- **Battle-tested patterns** — extracted from real production systems
+- **Type-safe** — full type hints, mypy-compatible
+- **Minimal surface area** — one job, done well
+- **Composable** — works with any LLM framework (LangChain, LlamaIndex, raw OpenAI, etc.)
+
+## The Vedic Arsenal
+
+`agent-notifier` is part of **[darshjme/arsenal](https://github.com/darshjme/arsenal)** — a collection of 100 focused Python libraries for LLM agent infrastructure.
+
+Each library solves exactly one problem. Together they form a complete stack.
+
+```
+pip install agent-notifier  # this library
+# Browse all 100: https://github.com/darshjme/arsenal
 ```
 
-### `Notifier`
+## Contributing
 
-```python
-class Notifier:
-    """Base notification dispatcher.
-    def __init__(self, name: str) -> None:
-    def subscribe(self, event: str, handler: Callable) -> None:
-        """Register *handler* for *event*."""
-    def unsubscribe(self, event: str, handler: Callable) -> None:
-        """Remove *handler* from *event*.  No-op if not registered."""
-    def notify(self, event: str, data: dict | None = None) -> None:
-        """Fire all handlers registered for *event*."""
-```
+Found a bug? Have an improvement?
 
-### `NotifierProtocol`
+1. Fork the repo
+2. Create a feature branch (`git checkout -b fix/your-fix`)
+3. Add tests
+4. Open a PR
 
-```python
-class NotifierProtocol(Protocol):
-    """Anything with a ``notify(event, data)`` method qualifies."""
-    def notify(self, event: str, data: dict | None = None) -> None: ...  # noqa: E704
-```
+All contributions welcome. Keep it zero-dependency.
 
-### `NotificationRouter`
+## License
 
-```python
-class NotificationRouter:
-    """Routes events to notifiers based on glob patterns.
-    def __init__(self) -> None:
-    def register(self, event_pattern: str, notifier: NotifierProtocol) -> None:
-        """Map *event_pattern* (glob) to *notifier*.
-    def dispatch(self, event: str, data: dict[str, Any] | None = None) -> None:
-        """Send *event* to every notifier whose pattern matches."""
-```
-
-
-## How It Works
-
-### Flow
-
-```mermaid
-flowchart LR
-    A[User Code] -->|create| B[DigestNotifier]
-    B -->|configure| C[Notifier]
-    C -->|execute| D{Success?}
-    D -->|yes| E[Return Result]
-    D -->|no| F[Error Handler]
-    F --> G[Fallback / Retry]
-    G --> C
-```
-
-### Sequence
-
-```mermaid
-sequenceDiagram
-    participant App
-    participant DigestNotifier
-    participant Notifier
-
-    App->>+DigestNotifier: initialise()
-    DigestNotifier->>+Notifier: configure()
-    Notifier-->>-DigestNotifier: ready
-    App->>+DigestNotifier: run(context)
-    DigestNotifier->>+Notifier: execute(context)
-    Notifier-->>-DigestNotifier: result
-    DigestNotifier-->>-App: WorkflowResult
-```
-
-## Philosophy
-
-> *Dūta* — the divine messenger — is the original notification system; alerts carry dharma across distances.
+MIT — use freely, build freely.
 
 ---
 
-*Part of the [arsenal](https://github.com/darshjme/arsenal) — production stack for LLM agents.*
+<div align="center">
 
-*Built by [Darshankumar Joshi](https://github.com/darshjme), Gujarat, India.*
+**Built with 🌊 by [Darshankumar Joshi](https://github.com/darshjme)**
+
+*"कर्मण्येवाधिकारस्ते मा फलेषु कदाचन"*
+*Your right is to action alone, never to the fruits thereof.*
+
+[Arsenal](https://github.com/darshjme/arsenal) · [GitHub](https://github.com/darshjme) · [Twitter](https://twitter.com/thedarshanjoshi)
+
+</div>
