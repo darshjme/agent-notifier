@@ -1,10 +1,12 @@
 <div align="center">
 
-<img src="assets/agent-notifier-hero.png" alt="agent-notifier — Vedic Arsenal" width="100%" />
+<img src="assets/agent-notifier-hero.png" alt="agent-notifier — Vedic Arsenal by Darshankumar Joshi" width="100%" />
 
 # 🌊 agent-notifier
 
-### *शंख* — Shankha — the conch shell that notifies all
+<h3><em>शंख</em></h3>
+
+> *Shankha — the conch shell that notifies all*
 
 **Notification dispatch for agent events — webhook, digest, routing, in-process callbacks. Zero dependencies.**
 
@@ -39,6 +41,19 @@ Or clone directly:
 git clone https://github.com/darshjme/agent-notifier.git
 cd agent-notifier
 pip install -e .
+```
+
+## How It Works
+
+```mermaid
+flowchart LR
+    A[Input] --> B[agent-notifier]
+    B --> C{Process}
+    C -- Success --> D[Output]
+    C -- Error --> E[Handle / Retry]
+    E --> B
+    style B fill:#6b21a8,color:#fff
+    note["Notifier — Zero Dependencies"]
 ```
 
 ## Quick Start
@@ -90,7 +105,7 @@ MIT — use freely, build freely.
 
 <div align="center">
 
-**Built with 🌊 by [Darshankumar Joshi](https://github.com/darshjme)**
+**Built with 🌊 by [Darshankumar Joshi](https://github.com/darshjme)** · [@thedarshanjoshi](https://twitter.com/thedarshanjoshi)
 
 *"कर्मण्येवाधिकारस्ते मा फलेषु कदाचन"*
 *Your right is to action alone, never to the fruits thereof.*
